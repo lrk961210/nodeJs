@@ -36,5 +36,6 @@ CommonJS 规定，module代表当前模块，module.exports 是对外的接口�
   console.log(aaa.x); // 2
   console.log(aaa.getX()); // 2
 ```
-
+参考链接 http://javascript.ruanyifeng.com/nodejs/module.html  
+未完待续
 
