@@ -202,8 +202,8 @@ Event Emitter 接口可以部署在任意对象上，使得这些对象也能订
 
 ###### 让进程 监听 uncaughtException 事件
 ```
-  process.on('uncaughtException', function (err) {
-    console.error('uncaught exception:', err.stack || err);
+  process.on('uncaughtException', function (err) {      // 监听 uncaughtException
+    console.error('uncaught exception:', err.stack || err); // 控制台抛错
     // 关闭资源
     closeEverything(function(err) {
       if (err)
@@ -213,3 +213,30 @@ Event Emitter 接口可以部署在任意对象上，使得这些对象也能订
     });
   });
 ```
+
+##### 事件类型
+Events模块默认支持两个事件： 
+newListener：   添加 新的回调函数时触发。
+removeListener：移除 回调时触发
+
+```
+  ee.on("newListener", function (evtName) {  //绑定 newListener
+    console.log("New Listener: " + evtName);
+  });
+
+  ee.on("removeListener", function (evtName) { // 绑定 removeListener， 顺便触发了 newListener
+    console.log("Removed Listener: " + evtName);
+  });
+
+  function foo() {}
+
+  ee.on("save-user", foo);  // 绑定 事件， 顺便触发了 newListener
+  ee.removeListener("save-user", foo); // 移除事件， 顺便触发了 removeListener
+
+  // New Listener: removeListener
+  // New Listener: save-user
+  // Removed Listener: save-user
+
+```
+
+参考链接 http://javascript.ruanyifeng.com/nodejs/events.html
