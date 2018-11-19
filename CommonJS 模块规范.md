@@ -29,6 +29,78 @@ CommonJS 规定，module代表当前模块，module.exports 是对外的接口�
   module.exports.addX = addX;
 ```
 
+#### require 加载模块
+```
+  var aaa = require('./aaa.js');
+
+  console.log(aaa.x); // 2
+  console.log(aaa.getX()); // 2
+```
+
+#### node 的 module 对象
+Node内部有一个Module构建函数。所有模块都是Module的实例。
+每个模块的内部，都有一个module对象， 代表当前模块，有以下属性
+
+```
+  module.id 模块的识别符，通常是带有绝对路径的模块文件名。
+  module.filename 模块的文件名，带有绝对路径。
+  module.loaded 返回一个布尔值，模块是否已经完成加载。
+  module.parent 返回一个对象，调用该模块的模块。
+  module.children 返回一个数组，该模块要用到的其他模块。
+  module.exports 模块对外输出的值。
+``` 
+
+示例： 
+  ```
+  // example.js
+  var jquery = require('jquery');
+  exports.$ = jquery;
+  console.log(module);
+```
+执行这个文件，命令行会输出如下信息。
+```
+  { id: '.',
+    exports: { '$': [Function] }
+    parent: null,    //在命令行中调用，所以为null
+    filename: '/path/to/example.js',   //绝对路径
+    loaded: false,   //还未完成加载
+    children:  //调用到 jquery （开头 require）
+     [ { id: '/path/to/node_modules/jquery/dist/jquery.js',
+         exports: [Function],
+         parent: [Circular],
+         filename: '/path/to/node_modules/jquery/dist/jquery.js',
+         loaded: true,
+         children: [],
+         paths: [Object] } ],
+    paths: //这个好像没说明
+     [ '/home/user/deleted/node_modules',
+       '/home/user/node_modules',
+       '/home/node_modules',
+       '/node_modules' ]
+  }
+```
+
+可以利用parent是否为null，来判断是否为入口脚本
+```
+  if (!module.parent) {
+      // ran with `node something.js`
+      app.listen(8088, function() {
+          console.log('app listening on port 8088');
+      })
+  } else {
+      // used with `require('/.something.js')`
+      module.exports = app;
+  }
+```
+
+### module.exports
+module.exports属性表示当前模块对外输出的接口，其他文件加载该模块，实际上就是读取module.exports变量。
+
+
+
+
+
+
 ## require命令(读入并执行js文件，返回 exports对象)
 ```
     // example.js
