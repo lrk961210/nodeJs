@@ -79,3 +79,48 @@ http模块主要用于搭建HTTP服务。
     }).listen(8080, "localhost");
 
 ```
+
+## request 对象
+createServer函数中的 request 对象，拥有以下属性。
+
+- url：发出请求的网址。
+- method：HTTP请求的方法。
+- headers：HTTP请求的所有HTTP头信息。
+
+获取请求的路径名。
+```
+    var url = require('url');
+    var pathname = url.parse(request.url).pathname;
+```
+
+setEncoding()方法用于设置请求的编码
+```
+    request.setEncoding("utf8");
+```
+
+addListener()方法用于为请求添加监听事件的回调函数
+```
+    var querystring = require('querystring');
+    var postData = '';
+
+    request.addListener('data', function (postDataChunk) {
+      postData += postDataChunk;
+    });
+
+    request.addListener('end', function () {
+      response.writeHead(200, {'Content-Type': 'text/plain'});
+      response.write("You've sent the text: " + querystring.parse(postData).text);
+      response.end();
+    });
+```
+#### 处理异步操作
+```
+    var exec = require("child_process").exec;
+
+    exec('ls -lah', function (error, stdout, stderr) {
+      response.writeHead(200, {'Content-Type': 'text/plain'});
+      response.write(stdout);
+      response.end();
+    });
+```
+
