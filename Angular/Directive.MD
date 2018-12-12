@@ -14,7 +14,7 @@ CLI命令会创建相应文件，并在跟模块AppModule中声明这个指令�
   import { Directive } from '@angular/core';
 
   @Directive({
-    selector: '[appHighlight]' //指定了该指令的 CSS 属性型选择器
+    selector: '[appHighlight]' //指定了该指令的 CSS 属性型选择器，而不是一个html标签
   })
   export class HighlightDirective {
     constructor() { }
@@ -68,3 +68,46 @@ export class HighlightDirective {
   }
 ```
 
+还可以使用 @Input 向指令传递值
+
+
+#### 结构型指令
+
+```
+    import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+
+    @Directive({ selector: '[appUnless]'})  // 选择器
+    export class UnlessDirective {
+      private hasView = false;  
+      // 注入 templateRef viewContainer
+      // 通过把一个指令放在 <ng-template> 元素（或一个带 * 前缀的指令）上，可以访问 TemplateRef 的实例
+      constructor(  
+        private templateRef: TemplateRef<any>,
+        private viewContainer: ViewContainerRef) { }
+      // 根据输入的值 设置视图
+      @Input() set appUnless(condition: boolean) {
+        if (!condition && !this.hasView) {
+          // 生成
+          this.viewContainer.createEmbeddedView(this.templateRef);
+          this.hasView = true;
+        } else if (condition && this.hasView) {
+          // 清除
+          this.viewContainer.clear();
+          this.hasView = false;
+        }
+      }
+    }
+
+```
+使用（注意 * 号）
+```
+<p *appUnless="condition" class="unless a">
+  (A) This paragraph is displayed because the condition is false.
+</p>
+
+<p *appUnless="!condition" class="unless b">
+  (B) Although the condition is true,
+  this paragraph is displayed because appUnless is set to false.
+</p>
+
+```
