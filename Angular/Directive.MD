@@ -36,7 +36,8 @@ export class HighlightDirective {
 
 ```
 
-使用： 
+使用： 在模块中导入指令（import {...} from '...'）
+       在 @NgModule 的 declarations 数组中声明它。
 
 ```
   <p appHighlight>高亮显示</p>
